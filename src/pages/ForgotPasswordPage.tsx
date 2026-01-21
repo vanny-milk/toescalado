@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useRouter } from "../utils/router";
 import { authService } from "../services/auth";
 import { Button } from "../components/Button";
-import { Input } from "../components/Input";
+import { InputWithIcon } from "../components/InputWithIcon";
 import { Label } from "../components/Label";
+import { FormFooter } from "../components/FormFooter";
 import {
   Card,
   CardHeader,
@@ -46,64 +47,80 @@ export function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Reset Password</CardTitle>
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="space-y-2">
+          <CardTitle className="text-3xl">Redefinir Senha</CardTitle>
           <CardDescription>
-            Enter your email to receive password reset instructions
+            Digite seu email para receber as instruções de redefinição
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-5">
             {error && (
-              <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+              <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive border border-destructive/20">
                 {error}
               </div>
             )}
             {success && (
-              <div className="rounded-md bg-accent/10 p-3 text-sm text-accent">
-                Check your email for password reset instructions
+              <div className="rounded-lg bg-accent/10 p-3 text-sm text-accent border border-accent/20">
+                ✓ Verifique seu email para as instruções de redefinição
               </div>
             )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input
+              <InputWithIcon
                 id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder="seu@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isLoading}
+                icon={
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                }
               />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-3">
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Sending..." : "Send Reset Link"}
+              {isLoading ? "Enviando..." : "Enviar Link de Redefinição"}
             </Button>
             <Button
               type="button"
               variant="link"
-              className="w-full"
+              className="w-full text-primary"
               onClick={() => navigate("login")}
               disabled={isLoading}
             >
-              Back to Login
+              Voltar para Login
             </Button>
             <div className="text-center text-sm text-muted-foreground">
-              Don't have an account?{" "}
+              Não tem uma conta?{" "}
               <Button
                 type="button"
                 variant="link"
-                className="p-0 h-auto"
+                className="p-0 h-auto text-primary"
                 onClick={() => navigate("signup")}
                 disabled={isLoading}
               >
-                Sign up
+                Inscrever-se
               </Button>
             </div>
           </CardFooter>
+          <FormFooter />
         </form>
       </Card>
     </div>

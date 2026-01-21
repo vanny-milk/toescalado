@@ -1,0 +1,84 @@
+<svg
+  width="256"
+  height="256"
+  viewBox="0 0 256 256"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <!-- Corpo da agenda -->
+  <rect
+    x="40"
+    y="56"
+    width="176"
+    height="160"
+    rx="20"
+    fill="#0F172A"
+    stroke="#22C55E"
+    stroke-width="8"
+  />
+
+  <!-- Topo da agenda -->
+  <rect
+    x="40"
+    y="56"
+    width="176"
+    height="40"
+    rx="20"
+    fill="#2563EB"
+  />
+
+  <!-- Argolas -->
+  <rect x="76" y="32" width="20" height="40" rx="10" fill="#2563EB"/>
+  <rect x="160" y="32" width="20" height="40" rx="10" fill="#2563EB"/>
+
+  <!-- Check -->
+  <path
+    d="M96 152 L120 176 L168 128"
+    stroke="#22C55E"
+    stroke-width="14"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>
+<svg
+  width="256"
+  height="256"
+  viewBox="0 0 256 256"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <!-- Corpo da agenda -->
+  <rect
+    x="40"
+    y="56"
+    width="176"
+    height="160"
+    rx="20"
+    fill="#0F172A"
+    stroke="#22C55E"
+    stroke-width="8"
+  />
+
+  <!-- Topo da agenda -->
+  <rect
+    x="40"
+    y="56"
+    width="176"
+    height="40"
+    rx="20"
+    fill="#2563EB"
+  />
+
+  <!-- Argolas -->
+  <rect x="76" y="32" width="20" height="40" rx="10" fill="#2563EB"/>
+  <rect x="160" y="32" width="20" height="40" rx="10" fill="#2563EB"/>
+
+  <!-- Check -->
+  <path
+    d="M96 152 L120 176 L168 128"
+    stroke="#22C55E"
+    stroke-width="14"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

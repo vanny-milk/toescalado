@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import type { Database } from "../types/supabase";
 import type {
   SignUpPayload,
   SignInPayload,
@@ -13,7 +14,7 @@ if (!supabaseUrl || !supabaseKey) {
   console.warn("Supabase credentials not configured");
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
 export const authService = {
   async signUp(payload: SignUpPayload): Promise<AuthResponse> {
@@ -167,5 +168,43 @@ export const authService = {
       data: { session },
     } = await supabase.auth.getSession();
     return session;
+  },
+
+  async updateProfile(payload: { fullName?: string }) {
+    try {
+      const { data, error } = await supabase.auth.updateUser({
+        data: {
+          full_name: payload.fullName,
+        },
+      });
+
+      if (error) {
+        return {
+          success: false,
+          message: error.message,
+          error: error.message,
+        };
+      }
+
+      return {
+        success: true,
+        message: "Profile updated",
+        user: data.user
+          ? {
+              id: data.user.id,
+              email: data.user.email || "",
+              user_metadata: data.user.user_metadata,
+            }
+          : undefined,
+      };
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unknown error occurred";
+      return {
+        success: false,
+        message,
+        error: message,
+      };
+    }
   },
 };

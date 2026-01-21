@@ -3,6 +3,10 @@ import { IndexPage } from "./pages/IndexPage";
 import { LoginPage } from "./pages/LoginPage";
 import { SignUpPage } from "./pages/SignUpPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
+import { AgendaPage } from "./pages/AgendaPage";
+import { GraphicsPage } from "./pages/GraphicsPage";
+import { EditProfilePage } from "./pages/EditProfilePage";
+import { BottomNav } from "./components/BottomNav";
 
 function AppContent() {
   const { currentPage, isLoading } = useRouter();
@@ -21,6 +25,12 @@ function AppContent() {
   switch (currentPage) {
     case "index":
       return <IndexPage />;
+    case "agenda":
+      return <AgendaPage />;
+    case "graphics":
+      return <GraphicsPage />;
+    case "editprofile":
+      return <EditProfilePage />;
     case "login":
       return <LoginPage />;
     case "signup":
@@ -36,6 +46,7 @@ export function App() {
   return (
     <RouterProvider>
       <AppContent />
+      <BottomNav />
     </RouterProvider>
   );
 }

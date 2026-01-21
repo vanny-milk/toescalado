@@ -52,6 +52,9 @@ export function IndexPage() {
           )}
         </CardContent>
         <CardFooter className="flex gap-2 justify-center">
+          <Button variant="outline" onClick={() => navigate("editprofile")}>
+            Editar Perfil
+          </Button>
           <Button variant="outline" onClick={() => navigate("login")}>
             Back to Login
           </Button>
