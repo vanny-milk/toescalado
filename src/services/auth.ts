@@ -101,7 +101,9 @@ export const authService = {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/`,
+          redirectTo: import.meta.env.PROD
+            ? 'https://toescalado.vercel.app/'
+            : `${window.location.origin}/`,
         },
       });
 
