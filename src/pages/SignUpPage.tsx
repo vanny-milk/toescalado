@@ -70,23 +70,29 @@ export function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="space-y-2">
-          <CardTitle className="text-3xl">Criar Conta</CardTitle>
-          <CardDescription>
-            Inscreva-se para começar a usar
+    <div className="min-h-screen w-full flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900 via-gray-900 to-black">
+      <Card className="w-full max-w-md bg-white/5 backdrop-blur-xl border-white/10 shadow-2xl rounded-3xl relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50"></div>
+
+        <CardHeader className="space-y-4 text-center pb-8 pt-8">
+          <div className="flex flex-col items-center justify-center mb-0">
+            <img src="/logo.svg" alt="Tô Escalado?" className="w-16 h-16 mb-2" />
+            <h1 className="text-xl font-bold text-white mb-1">Tô Escalado?</h1>
+          </div>
+          <CardTitle className="text-3xl font-bold text-white tracking-tight">Criar Conta</CardTitle>
+          <CardDescription className="text-gray-400 text-base">
+            Junte-se a nós hoje mesmo
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-5">
+          <CardContent className="space-y-5 px-8">
             {error && (
-              <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive border border-destructive/20">
+              <div className="rounded-xl bg-red-500/10 p-3 text-sm text-red-200 border border-red-500/20 text-center">
                 {error}
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="fullName">Nome Completo</Label>
+              <Label htmlFor="fullName" className="text-gray-300 ml-1">Nome Completo</Label>
               <InputWithIcon
                 id="fullName"
                 type="text"
@@ -95,9 +101,10 @@ export function SignUpPage() {
                 onChange={(e) => setFullName(e.target.value)}
                 required
                 disabled={isLoading}
+                className="bg-black/20 border-white/10 text-white placeholder:text-gray-500 focus-visible:ring-purple-500/50 h-12 rounded-xl"
                 icon={
                   <svg
-                    className="w-4 h-4"
+                    className="w-5 h-5 text-gray-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -113,7 +120,7 @@ export function SignUpPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-gray-300 ml-1">Email</Label>
               <InputWithIcon
                 id="email"
                 type="email"
@@ -122,9 +129,10 @@ export function SignUpPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isLoading}
+                className="bg-black/20 border-white/10 text-white placeholder:text-gray-500 focus-visible:ring-purple-500/50 h-12 rounded-xl"
                 icon={
                   <svg
-                    className="w-4 h-4"
+                    className="w-5 h-5 text-gray-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -140,18 +148,19 @@ export function SignUpPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
+              <Label htmlFor="password" className="text-gray-300 ml-1">Senha</Label>
               <InputWithIcon
                 id="password"
                 type="password"
-                placeholder="Digite uma senha"
+                placeholder="Crie uma senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
+                className="bg-black/20 border-white/10 text-white placeholder:text-gray-500 focus-visible:ring-purple-500/50 h-12 rounded-xl"
                 icon={
                   <svg
-                    className="w-4 h-4"
+                    className="w-5 h-5 text-gray-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -167,7 +176,7 @@ export function SignUpPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirmar Senha</Label>
+              <Label htmlFor="confirmPassword" className="text-gray-300 ml-1">Confirmar Senha</Label>
               <InputWithIcon
                 id="confirmPassword"
                 type="password"
@@ -176,9 +185,10 @@ export function SignUpPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 disabled={isLoading}
+                className="bg-black/20 border-white/10 text-white placeholder:text-gray-500 focus-visible:ring-purple-500/50 h-12 rounded-xl"
                 icon={
                   <svg
-                    className="w-4 h-4"
+                    className="w-5 h-5 text-gray-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -193,22 +203,23 @@ export function SignUpPage() {
                 }
               />
             </div>
-            <div className="flex items-start space-x-2">
+            <div className="flex items-start space-x-2 pt-2">
               <Checkbox
                 id="agreeToTerms"
                 checked={agreeToTerms}
                 onChange={(e) => setAgreeToTerms(e.target.checked)}
                 disabled={isLoading}
+                className="mt-1 border-white/20 data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
               />
               <Label
                 htmlFor="agreeToTerms"
-                className="cursor-pointer font-normal text-sm leading-relaxed"
+                className="cursor-pointer font-normal text-sm leading-relaxed text-gray-400"
               >
                 Concordo com os{" "}
                 <Button
                   type="button"
                   variant="link"
-                  className="p-0 h-auto text-primary"
+                  className="p-0 h-auto text-purple-400 hover:text-purple-300"
                   disabled={isLoading}
                 >
                   termos e condições
@@ -216,16 +227,25 @@ export function SignUpPage() {
               </Label>
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-3">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Criando conta..." : "Inscrever-se"}
+          <CardFooter className="flex flex-col gap-6 px-8 pb-8 pt-2">
+            <Button
+              type="submit"
+              className="w-full h-12 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white font-semibold rounded-xl shadow-lg shadow-purple-500/25 border-0 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                  Criando conta...
+                </span>
+              ) : "Inscrever-se"}
             </Button>
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-sm text-gray-500">
               Já tem uma conta?{" "}
               <Button
                 type="button"
                 variant="link"
-                className="p-0 h-auto text-primary"
+                className="p-0 h-auto text-purple-400 hover:text-purple-300 font-semibold"
                 onClick={() => navigate("login")}
                 disabled={isLoading}
               >
@@ -236,6 +256,12 @@ export function SignUpPage() {
           <FormFooter />
         </form>
       </Card>
+
+      {/* Background decoration */}
+      <div className="fixed top-0 left-0 -z-10 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-purple-900/30 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-indigo-900/30 rounded-full blur-[100px]"></div>
+      </div>
     </div>
   );
 }

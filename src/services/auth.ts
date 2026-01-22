@@ -42,10 +42,10 @@ export const authService = {
         message: "Check your email to confirm the account",
         user: data.user
           ? {
-              id: data.user.id,
-              email: data.user.email || "",
-              user_metadata: data.user.user_metadata,
-            }
+            id: data.user.id,
+            email: data.user.email || "",
+            user_metadata: data.user.user_metadata,
+          }
           : undefined,
       };
     } catch (error) {
@@ -79,11 +79,43 @@ export const authService = {
         message: "Logged in successfully",
         user: data.user
           ? {
-              id: data.user.id,
-              email: data.user.email || "",
-              user_metadata: data.user.user_metadata,
-            }
+            id: data.user.id,
+            email: data.user.email || "",
+            user_metadata: data.user.user_metadata,
+          }
           : undefined,
+      };
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unknown error occurred";
+      return {
+        success: false,
+        message,
+        error: message,
+      };
+    }
+  },
+
+  async signInWithGoogle(): Promise<AuthResponse> {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      });
+
+      if (error) {
+        return {
+          success: false,
+          message: error.message,
+          error: error.message,
+        };
+      }
+
+      return {
+        success: true,
+        message: "Redirecting to Google...",
       };
     } catch (error) {
       const message =
@@ -191,10 +223,10 @@ export const authService = {
         message: "Profile updated",
         user: data.user
           ? {
-              id: data.user.id,
-              email: data.user.email || "",
-              user_metadata: data.user.user_metadata,
-            }
+            id: data.user.id,
+            email: data.user.email || "",
+            user_metadata: data.user.user_metadata,
+          }
           : undefined,
       };
     } catch (error) {
