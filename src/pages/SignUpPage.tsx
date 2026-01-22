@@ -76,7 +76,7 @@ export function SignUpPage() {
 
         <CardHeader className="space-y-4 text-center pb-8 pt-8">
           <div className="flex flex-col items-center justify-center mb-0">
-            <img src="/logo.svg" alt="Tô Escalado?" className="w-16 h-16 mb-2" />
+            <img src="/logo/logo.svg" alt="Tô Escalado?" className="w-16 h-16 mb-2" />
             <h1 className="text-xl font-bold text-white mb-1">Tô Escalado?</h1>
           </div>
           <CardTitle className="text-3xl font-bold text-white tracking-tight">Criar Conta</CardTitle>

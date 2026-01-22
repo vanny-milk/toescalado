@@ -38,6 +38,14 @@ Este projeto assume que:
 - ❌ Bypassar políticas de segurança “temporariamente”
 - ❌ Justificar falhas com velocidade ou prazo
 
+### 2.1 Gestão de Credenciais e Senhas
+
+- ❌ **Proibido:** Senhas em texto plano (plain text) em qualquer lugar.
+- ❌ **Proibido:** Hardcoded credentials (mesmo de teste).
+- ✅ **Obrigatório:** Uso de variáveis de ambiente (.env) para chaves e secrets.
+- ✅ **Obrigatório:** Senhas de usuários devem ser geridas exclusivamente pelo Auth Provider (Supabase Auth).
+- ❌ **Proibido:** Logs que exponham tokens ou dados sensíveis (Sanitize Logs).
+
 ---
 
 ## 3. Políticas de Queries e Banco de Dados
@@ -156,14 +164,15 @@ Todo acesso ao banco tem impacto direto em:
 
 ---
 
-### 6.2 Commits e Histórico
+### 6.2 Commits e Versionamento (Obrigatório)
 
 - Commits pequenos e focados
 - Uma responsabilidade por commit
 - Histórico deve ser legível e auditável
 - Reescrever histórico **somente com autorização**
+- **REGRA DE OURO:** Todo commit, sem exceção, deve incluir a subida de versão (patch 0.0.X) no `package.json`.
 
-> Histórico confuso é risco de segurança.
+> Histórico confuso e sem versionamento é risco de segurança.
 
 ---
 

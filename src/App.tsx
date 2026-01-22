@@ -7,6 +7,7 @@ import { AgendaPage } from "./pages/AgendaPage";
 import { GraphicsPage } from "./pages/GraphicsPage";
 import { EditProfilePage } from "./pages/EditProfilePage";
 import { BottomNav } from "./components/BottomNav";
+import { NavHeader } from "./components/NavHeader";
 
 function AppContent() {
   const { currentPage, isLoading } = useRouter();
@@ -45,6 +46,7 @@ function AppContent() {
 export function App() {
   return (
     <RouterProvider>
+      <NavHeader />
       <AppContent />
       <BottomNav />
     </RouterProvider>
