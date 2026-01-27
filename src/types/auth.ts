@@ -1,9 +1,11 @@
+// Tipos para autenticação
+// Seguindo as políticas de segurança do projeto
+// auth.users é a fonte de verdade para dados de usuário
+
 export interface AuthUser {
   id: string;
   email: string;
-  user_metadata?: {
-    full_name?: string;
-  };
+  user_metadata?: Record<string, any>;
 }
 
 export interface SignUpPayload {

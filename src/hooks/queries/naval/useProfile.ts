@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
-import { navalKeys } from '@/lib/query-keys';
+import { supabase } from '../../../lib/supabase';
+import { navalKeys } from '../../../lib/query-keys';
 
 export function useProfile(userId: string | undefined) {
     return useQuery({

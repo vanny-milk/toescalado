@@ -1,5 +1,7 @@
 export type DurationMinutes = number; // duration in minutes
 
+export type EventType = "reuniao" | "ensaio" | "culto" | "outro";
+
 export interface Department {
   id: string;
   name: string;
@@ -8,13 +10,15 @@ export interface Department {
 export interface Participant {
   id: string;
   name: string;
-  email?: string;
+  email?: string | null;
   departmentId?: string | null;
+  avatar_url?: string | null;
 }
 
 export interface EventItem {
   id: string;
   title: string;
+  type?: EventType;
   description?: string | null;
   start: string; // ISO datetime
   end?: string; // ISO datetime

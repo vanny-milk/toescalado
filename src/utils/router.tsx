@@ -26,7 +26,7 @@ const RouterContext = React.createContext<RouterContextType | undefined>(
 );
 
 export function RouterProvider({ children }: { children: ReactNode }) {
-  const [currentPage, setCurrentPage] = useState<Page>("index");
+  const [currentPage, setCurrentPage] = useState<Page>("login");
   const [isLoading, setIsLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any | null>(null);
 
@@ -65,6 +65,7 @@ export function RouterProvider({ children }: { children: ReactNode }) {
         }
       } catch (error) {
         console.error("Failed to check user:", error);
+        setCurrentPage("login");
       } finally {
         setIsLoading(false);
       }

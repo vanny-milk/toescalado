@@ -9,8 +9,27 @@ import { EditProfilePage } from "./pages/EditProfilePage";
 import { BottomNav } from "./components/BottomNav";
 import { NavHeader } from "./components/NavHeader";
 
+import { useEffect } from "react"; // 1. Importe o useEffect
+// ... (seus outros imports permanecem iguais)
+
 function AppContent() {
-  const { currentPage, isLoading } = useRouter();
+  const { currentPage, isLoading, navigate, currentUser } = useRouter();
+
+  // Lógica de Redirecionamento Automático
+  useEffect(() => {
+    if (isLoading) return;
+
+    const publicPages = ["login", "signup", "forgotpass"];
+    const isLoggingIn = publicPages.includes(currentPage);
+
+    if (currentUser && isLoggingIn) {
+      // Se está logado e tenta ver login -> vai para agenda
+      navigate("agenda");
+    } else if (!currentUser && !isLoggingIn && currentPage !== "index") {
+      // Se não está logado e tenta ver páginas internas -> vai para login
+      navigate("login");
+    }
+  }, [currentUser, currentPage, isLoading, navigate]);
 
   if (isLoading) {
     return (
@@ -23,32 +42,53 @@ function AppContent() {
     );
   }
 
+  // 4. Melhore a detecção de quando mostrar os menus
+  // Adicionei "index" na lista para não mostrar nav na Landing Page, se desejar
+  const showNav = !["login", "signup", "forgotpass", "index"].includes(currentPage);
+
+  let pageContent;
   switch (currentPage) {
     case "index":
-      return <IndexPage />;
+      pageContent = <IndexPage />;
+      break;
     case "agenda":
-      return <AgendaPage />;
+      pageContent = <AgendaPage />;
+      break;
     case "graphics":
-      return <GraphicsPage />;
+      pageContent = <GraphicsPage />;
+      break;
     case "editprofile":
-      return <EditProfilePage />;
+      pageContent = <EditProfilePage />;
+      break;
     case "login":
-      return <LoginPage />;
+      pageContent = <LoginPage />;
+      break;
     case "signup":
-      return <SignUpPage />;
+      pageContent = <SignUpPage />;
+      break;
     case "forgotpass":
-      return <ForgotPasswordPage />;
+      pageContent = <ForgotPasswordPage />;
+      break;
     default:
-      return <LoginPage />;
+      pageContent = currentUser ? <AgendaPage /> : <LoginPage />;
+      break;
   }
+
+  return (
+    <>
+      {showNav && <NavHeader />}
+      <main className={showNav ? "pb-20" : ""}> 
+        {pageContent}
+      </main>
+      {showNav && <BottomNav />}
+    </>
+  );
 }
 
 export function App() {
   return (
     <RouterProvider>
-      <NavHeader />
       <AppContent />
-      <BottomNav />
     </RouterProvider>
   );
 }

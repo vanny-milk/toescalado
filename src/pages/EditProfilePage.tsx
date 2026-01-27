@@ -1,22 +1,22 @@
 import { useEffect, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase';
-import { updateProfile } from '@/lib/api';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { supabase } from '../lib/supabase';
+import { updateProfile } from '../lib/api';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog"
+} from "../components/ui/dialog"
 import { Camera, LogOut } from 'lucide-react';
-import { useRouter } from '@/utils/router';
-import { useProfile } from '@/hooks/queries/naval/useProfile';
+import { useRouter } from '../utils/router';
+import { useProfile } from '../hooks/queries/naval/useProfile';
 import { useQueryClient } from '@tanstack/react-query';
-import { navalKeys } from '@/lib/query-keys';
+import { navalKeys } from '../lib/query-keys';
 
 interface EditProfileProps {
   user: User | null;
