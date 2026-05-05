@@ -1,8 +1,5 @@
 import { supabase } from '../lib/supabase';
-
 import type { EventItem } from '../types/agenda';
-
-
 
 export const eventService = {
   /**
@@ -39,7 +36,6 @@ export const eventService = {
       throw new Error('Falha ao buscar eventos.');
     }
 
-    // Transformar dados do banco para o formato EventItem da UI
     return (data || []).map((event: any) => ({
       id: event.id,
       title: event.title,
@@ -61,14 +57,11 @@ export const eventService = {
    * Cria um novo evento e associa os convidados
    */
   async createEvent(event: Omit<EventItem, 'id'>, createdBy: string): Promise<void> {
-    if (!createdBy) {
-      console.error('[eventService.createEvent] Error: createdBy is missing');
-      throw new Error('Usuário não identificado.');
-    }
+    if (!createdBy) throw new Error('Usuário não identificado.');
 
     // 1. Inserir o evento
-    const { data: newEvent, error: eventError } = await (supabase
-      .from('events') as any)
+    const { data: newEvent, error: eventError } = await supabase
+      .from('events')
       .insert({
         title: event.title,
         description: event.description,
@@ -82,36 +75,31 @@ export const eventService = {
       .single();
 
     if (eventError) {
-      console.error('[eventService.createEvent] Event Error Details:', {
-        message: eventError.message,
-        details: eventError.details,
-        hint: eventError.hint,
-        code: eventError.code,
-        payload: { title: event.title, created_by: createdBy }
-      });
+      console.error('[eventService.createEvent] Error:', eventError);
       throw new Error(`Falha ao criar evento: ${eventError.message}`);
     }
 
-    // 2. Inserir os convidados, se houver
+    // 2. Inserir os convidados (O gatilho DB cuidará das notificações)
     if (event.participants && event.participants.length > 0) {
       const guestsToInsert = event.participants.map(p => ({
         event_id: newEvent.id,
         user_id: p.id,
         role: p.role,
-        status: 'pending' as const,
+        status: 'pending',
       }));
 
-      const { error: guestError } = await (supabase
-        .from('event_guests') as any)
+      const { error: guestError } = await supabase
+        .from('event_guests')
         .insert(guestsToInsert);
 
       if (guestError) {
-        console.error('[eventService.createEvent] Guests Error Details:', {
+        console.error('[eventService.createEvent] Guests Error details:', {
           message: guestError.message,
           details: guestError.details,
-          payload: guestsToInsert
+          hint: guestError.hint,
+          code: guestError.code
         });
-        throw new Error('Evento criado, mas falha ao adicionar convidados.');
+        throw new Error(`Evento criado, mas falha ao adicionar convidados: ${guestError.message}`);
       }
     }
   },
@@ -120,9 +108,8 @@ export const eventService = {
    * Atualiza um evento existente e sincroniza convidados
    */
   async updateEvent(event: EventItem): Promise<void> {
-    // 1. Atualizar dados do evento
-    const { error: eventError } = await (supabase
-      .from('events') as any)
+    const { error: eventError } = await supabase
+      .from('events')
       .update({
         title: event.title,
         description: event.description,
@@ -133,38 +120,48 @@ export const eventService = {
       })
       .eq('id', event.id);
 
-    if (eventError) {
-      console.error('[eventService.updateEvent] Event Error:', eventError);
-      throw new Error('Falha ao atualizar evento.');
+    if (eventError) throw new Error(`Falha ao atualizar evento: ${eventError.message}`);
+
+    // Sincronizar convidados
+    // 1. Remover convidados que não estão mais na lista
+    const currentParticipantIds = event.participants?.map(p => p.id) || [];
+    
+    if (currentParticipantIds.length > 0) {
+      const { error: deleteError } = await supabase
+        .from('event_guests')
+        .delete()
+        .eq('event_id', event.id)
+        .not('user_id', 'in', `(${currentParticipantIds.join(',')})`);
+
+      if (deleteError) {
+        console.error('[eventService.updateEvent] Delete error:', deleteError);
+      }
+    } else {
+      // Se não tem participantes, remove todos
+      await supabase.from('event_guests').delete().eq('event_id', event.id);
     }
 
-    // 2. Sincronizar convidados (simplificado: remove todos e insere novamente)
-    // Em produção, o ideal seria fazer um "upsert" ou comparar as listas
-    const { error: deleteError } = await supabase
-      .from('event_guests')
-      .delete()
-      .eq('event_id', event.id);
-
-    if (deleteError) {
-      console.error('[eventService.updateEvent] Delete Guests Error:', deleteError);
-      throw new Error('Falha ao sincronizar convidados.');
-    }
-
+    // 2. Upsert convidados (insere novos ou atualiza existentes)
     if (event.participants && event.participants.length > 0) {
-      const guestsToInsert = event.participants.map(p => ({
+      const guestsToUpsert = event.participants.map(p => ({
         event_id: event.id,
         user_id: p.id,
         role: p.role,
         status: p.status || 'pending',
       }));
 
-      const { error: guestError } = await (supabase
-        .from('event_guests') as any)
-        .insert(guestsToInsert);
+      const { error: upsertError } = await supabase
+        .from('event_guests')
+        .upsert(guestsToUpsert, { onConflict: 'event_id,user_id' });
 
-      if (guestError) {
-        console.error('[eventService.updateEvent] Insert Guests Error:', guestError);
-        throw new Error('Evento atualizado, mas falha ao sincronizar novos convidados.');
+      if (upsertError) {
+        console.error('[eventService.updateEvent] Upsert error details:', {
+          message: upsertError.message,
+          details: upsertError.details,
+          hint: upsertError.hint,
+          code: upsertError.code
+        });
+        throw new Error(`Falha ao sincronizar convidados: ${upsertError.message}`);
       }
     }
   },
@@ -173,14 +170,23 @@ export const eventService = {
    * Remove um evento
    */
   async deleteEvent(eventId: string): Promise<void> {
+    const { error } = await supabase.from('events').delete().eq('id', eventId);
+    if (error) throw new Error('Falha ao remover evento.');
+  },
+
+  /**
+   * Confirma ou recusa a presença (Gatilho DB cuidará de todas as notificações)
+   */
+  async confirmAttendance(eventId: string, userId: string, status: 'confirmed' | 'unavailable'): Promise<void> {
     const { error } = await supabase
-      .from('events')
-      .delete()
-      .eq('id', eventId);
+      .from('event_guests')
+      .update({ status })
+      .eq('event_id', eventId)
+      .eq('user_id', userId);
 
     if (error) {
-      console.error('[eventService.deleteEvent] Error:', error);
-      throw new Error('Falha ao remover evento.');
+      console.error('[eventService.confirmAttendance] Error:', error);
+      throw new Error('Falha ao atualizar presença.');
     }
   }
 };

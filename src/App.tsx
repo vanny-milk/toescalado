@@ -3,6 +3,7 @@ import { IndexPage } from "./pages/IndexPage";
 import { LoginPage } from "./pages/LoginPage";
 import { SignUpPage } from "./pages/SignUpPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
+import OnboardingPage from "./pages/OnboardingPage";
 import { AgendaPage } from "./pages/AgendaPage";
 import { GraphicsPage } from "./pages/GraphicsPage";
 import { EditProfilePage } from "./pages/EditProfilePage";
@@ -62,6 +63,9 @@ function AppContent() {
       break;
     case "login":
       pageContent = <LoginPage />;
+      break;
+    case "onboarding":
+      pageContent = <OnboardingPage />;
       break;
     case "signup":
       pageContent = <SignUpPage />;

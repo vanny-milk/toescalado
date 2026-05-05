@@ -3,6 +3,7 @@ import EditProfile from './EditProfile';
 import { Badge } from './ui/badge';
 import { useUserRoles, useAuthUser, useProfile } from '../hooks/useNavalHooks';
 import { useRouter } from '../utils/router';
+import { NotificationMenu } from './NotificationMenu';
 
 export function NavHeader() {
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
@@ -75,12 +76,14 @@ export function NavHeader() {
                     </div>
                 </div>
 
-                {/* Right: Logo */}
-                <div className="flex items-center gap-3 select-none">
+                {/* Right: Notifications & Logo */}
+                <div className="flex items-center gap-6 select-none">
+                    <NotificationMenu />
+                    
                     <img
                         src="/logo/logo.png"
                         alt="Naval Logo"
-                        className="h-10 w-auto object-contain fallback-logo"
+                        className="h-10 w-auto object-contain fallback-logo hidden md:block"
                         onError={(e) => {
                             e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-anchor'%3E%3Ccircle cx='12' cy='5' r='3'%3E%3C/circle%3E%3Cline x1='12' y1='22' x2='12' y2='8'%3E%3C/line%3E%3Cpath d='M5 12H2a10 10 0 0 0 20 0h-3'%3E%3C/path%3E%3C/svg%3E";
                             e.currentTarget.classList.add("p-1", "bg-foreground/10", "rounded");

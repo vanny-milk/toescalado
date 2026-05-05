@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/Card";
 import { Button } from "../components/Button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
@@ -9,6 +9,7 @@ import { Search, Plus, X, ChevronLeft, ChevronRight, Pencil, ArrowUpDown, Loader
 import { useUsers } from "../hooks/queries/useUsers";
 import { useCalendar } from "../hooks/useCalendar";
 import { useEvents, useEventMutation } from "../hooks/queries/useEvents";
+import { useAuthUser } from "../hooks/useNavalHooks";
 
 // Fallback para lista mockada apenas se o banco estiver vazio
 const fallbackUsers: Participant[] = [
@@ -45,17 +46,22 @@ export function AgendaPage() {
   const { data: supabaseUsers } = useUsers();
 
   // Usar usuários do Supabase ou fallback para lista mockada
+  const { data: authUser } = useAuthUser();
   const availableUsersList = useMemo(() => {
+    let list: Participant[] = [];
     if (supabaseUsers && supabaseUsers.length > 0) {
-      return supabaseUsers.map(user => ({
+      list = supabaseUsers.map(user => ({
         id: user.id,
-        name: user.name || user.full_name || 'Sem nome',
+        name: user.id === authUser?.id ? `${user.name || user.full_name || 'Sem nome'} (Eu)` : (user.name || user.full_name || 'Sem nome'),
         email: user.email,
         avatar_url: user.avatar_url,
       }));
+    } else {
+      list = [...fallbackUsers];
     }
-    return fallbackUsers;
-  }, [supabaseUsers]);
+    
+    return list;
+  }, [supabaseUsers, authUser?.id]);
 
   const events = useMemo(() => dbEvents || [], [dbEvents]);
 
@@ -111,6 +117,21 @@ export function AgendaPage() {
     setSortConfig({ key, direction });
   };
 
+  // Abrir modal automaticamente se houver event_id na URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const eventIdFromUrl = params.get('event_id');
+    
+    if (eventIdFromUrl && events.length > 0) {
+      const eventToOpen = events.find(e => e.id === eventIdFromUrl);
+      if (eventToOpen) {
+        handleEditEvent(eventToOpen);
+        // Limpar o parâmetro da URL sem recarregar a página
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }
+  }, [events]);
+
   const filteredParticipants = useMemo(() => {
     if (!participantSearch.trim()) return availableUsersList;
     const query = participantSearch.toLowerCase();
@@ -120,18 +141,6 @@ export function AgendaPage() {
         user.email?.toLowerCase().includes(query)
     );
   }, [participantSearch, availableUsersList]);
-
-  const handleAddParticipant = (participant: Participant) => {
-    if (!selectedParticipants.find((p) => p.id === participant.id)) {
-      setSelectedParticipants([...selectedParticipants, participant]);
-    }
-    setParticipantSearch("");
-    setShowParticipantDropdown(false);
-  };
-
-  const handleRemoveParticipant = (participantId: string) => {
-    setSelectedParticipants(selectedParticipants.filter((p) => p.id !== participantId));
-  };
 
   const handleEditEvent = (event: EventItem) => {
     const startDate = new Date(event.start);
@@ -143,11 +152,31 @@ export function AgendaPage() {
       description: event.description || "",
       date: startDate.toISOString().split("T")[0],
       startTime: startDate.toTimeString().slice(0, 5),
-      location: "",
+      location: event.location || "",
     });
     setSelectedParticipants(event.participants || []);
     setActiveTab("gerais");
     setIsDialogOpen(true);
+  };
+
+  const handleRemoveParticipant = (participantId: string) => {
+    setSelectedParticipants(selectedParticipants.filter((p) => p.id !== participantId));
+  };
+
+  const handleAddParticipant = (participant: Participant) => {
+    if (!selectedParticipants.find((p) => p.id === participant.id)) {
+      setSelectedParticipants([...selectedParticipants, participant]);
+      
+      // DEBUG: Mostrar notificações que seriam geradas
+      console.group(`🔔 Debug de Notificações: Convidando ${participant.name}`);
+      console.log('Evento:', newEvent.title || '(Novo Evento)');
+      console.log('Tipo: event_invite');
+      console.log('Destinatário:', participant.name);
+      console.log('Status: Aguardando Gatilho do Banco (Trigger tr_on_guest_added)');
+      console.groupEnd();
+    }
+    setParticipantSearch("");
+    setShowParticipantDropdown(false);
   };
 
   const getInitials = (name: string) => {
@@ -197,6 +226,24 @@ export function AgendaPage() {
     } catch (error: any) {
       console.error('Erro ao salvar evento:', error);
       alert(`Erro ao salvar o evento: ${error.message || 'Verifique se você tem permissão.'}`);
+    }
+  };
+
+  const handleConfirmAttendance = async (eventId: string, status: 'confirmed' | 'unavailable') => {
+    if (!authUser?.id) return;
+    try {
+      const { eventService } = await import('../services/eventService');
+      await eventService.confirmAttendance(eventId, authUser.id, status);
+      
+      // Atualizar estado local
+      setSelectedParticipants(prev => prev.map(p => 
+        p.id === authUser.id ? { ...p, status } : p
+      ));
+      
+      // Recarregar eventos para garantir sincronia
+      // refresh() do useEvents acontece automaticamente via react-query se configurado
+    } catch (error: any) {
+      alert(`Erro ao confirmar presença: ${error.message}`);
     }
   };
 
@@ -565,6 +612,8 @@ export function AgendaPage() {
                         setShowParticipantDropdown(true);
                       }}
                       onFocus={() => setShowParticipantDropdown(true)}
+                      autoComplete="off"
+                      data-lpignore="true"
                     />
                     
                     {/* Dropdown de usuários */}
@@ -620,17 +669,40 @@ export function AgendaPage() {
                           </div>
                           <span className="text-sm font-medium flex-1 truncate">{participant.name}</span>
                           
-                          <Input
-                            type="text"
-                            placeholder="Função (ex: Vocal)"
-                            value={participant.role || ""}
-                            onChange={(e) => {
-                              setSelectedParticipants(prev => prev.map(p => 
-                                p.id === participant.id ? { ...p, role: e.target.value } : p
-                              ));
-                            }}
-                            className="w-32 h-8 text-xs"
-                          />
+                          {participant.id === authUser?.id ? (
+                            <div className="flex gap-1">
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant={participant.status === 'confirmed' ? 'default' : 'outline'}
+                                className="h-7 px-2 text-[10px]"
+                                onClick={() => handleConfirmAttendance(newEvent.id!, 'confirmed')}
+                              >
+                                Confirmar
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant={participant.status === 'unavailable' ? 'destructive' : 'outline'}
+                                className="h-7 px-2 text-[10px]"
+                                onClick={() => handleConfirmAttendance(newEvent.id!, 'unavailable')}
+                              >
+                                Indisponível
+                              </Button>
+                            </div>
+                          ) : (
+                            <Input
+                              type="text"
+                              placeholder="Função (ex: Vocal)"
+                              value={participant.role || ""}
+                              onChange={(e) => {
+                                setSelectedParticipants(prev => prev.map(p => 
+                                  p.id === participant.id ? { ...p, role: e.target.value } : p
+                                ));
+                              }}
+                              className="w-32 h-8 text-xs"
+                            />
+                          )}
                           
                           <button
                             type="button"

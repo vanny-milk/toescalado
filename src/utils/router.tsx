@@ -37,10 +37,10 @@ export function RouterProvider({ children }: { children: ReactNode }) {
         if (!user) {
           setCurrentUser(null);
           setCurrentPage("login");
+          setIsLoading(false);
           return;
         }
 
-        // try to fetch profile from `profiles` table
         const { data: profile, error } = await supabase
           .from("profiles")
           .select("*")
@@ -51,8 +51,6 @@ export function RouterProvider({ children }: { children: ReactNode }) {
           console.error("Error fetching profile:", error);
         }
 
-
-        // If profile missing or missing required fields, send to onboarding
         const profileRow = profile as Database["public"]["Tables"]["profiles"]["Row"] | null;
         const needsOnboarding = !profileRow || !profileRow.city || !profileRow.role;
 
@@ -72,6 +70,21 @@ export function RouterProvider({ children }: { children: ReactNode }) {
     };
 
     checkUser();
+
+    // Listener para mudanças de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        // Quando logar, re-checar o perfil para ver se precisa de onboarding
+        checkUser();
+      } else if (event === 'SIGNED_OUT') {
+        setCurrentUser(null);
+        setCurrentPage("login");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const refreshCurrentUser = async () => {

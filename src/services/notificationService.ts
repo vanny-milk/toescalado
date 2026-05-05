@@ -8,7 +8,7 @@ export const notificationService = {
   async listNotifications(): Promise<Notification[]> {
     const { data, error } = await supabase
       .from('notifications')
-      .select('*')
+      .select('id, user_id, title, message, type, payload, is_read, created_at')
       .order('created_at', { ascending: false })
       .limit(50);
 
@@ -52,23 +52,23 @@ export const notificationService = {
   },
 
   /**
-   * Cria uma nova notificação
+   * Cria uma ou mais novas notificações (batch)
    */
-  async createNotification(notification: CreateNotificationDTO): Promise<void> {
+  async createNotifications(notifications: CreateNotificationDTO | CreateNotificationDTO[]): Promise<void> {
+    const toInsert = Array.isArray(notifications) ? notifications : [notifications];
+    
     const { error } = await supabase
       .from('notifications')
-      .insert({
-        user_id: notification.user_id,
-        title: notification.title,
-        message: notification.message,
-        type: notification.type,
-        payload: notification.payload || {},
-      });
+      .insert(toInsert.map(n => ({
+        user_id: n.user_id,
+        title: n.title,
+        message: n.message,
+        type: n.type,
+        payload: n.payload || {},
+      })));
 
     if (error) {
-      console.error('[notificationService.createNotification] Error:', error);
-      // Não lançamos erro aqui para não travar o fluxo principal (ex: criação de evento)
-      // mas registramos no console.
+      console.error('[notificationService.createNotifications] Error:', error);
     }
   }
 };

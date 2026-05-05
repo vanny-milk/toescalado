@@ -36,25 +36,15 @@ export function LoginPage() {
       });
 
       if (!response.success) {
-        setError(response.message || "Failed to login");
+        setError(response.message || "Email ou senha incorretos");
+        console.error("[Login] Auth error:", response.message);
       } else {
-        const userId = response.user?.id;
-        if (userId) {
-          const resp = await supabase.from("profiles").select("*").eq("id", userId).single();
-          const profile = resp.data as any;
-
-          const needsOnboarding = !profile || !profile.city || !profile.role;
-          if (needsOnboarding) {
-            navigate("onboarding");
-          } else {
-            navigate("agenda");
-          }
-        } else {
-          navigate("agenda");
-        }
+        console.log("[Login] Success! Waiting for router redirect...");
+        // O RouterProvider agora ouve onAuthStateChange e redirecionará automaticamente
       }
     } catch (err) {
-      setError("An unexpected error occurred");
+      console.error("[Login] Unexpected error:", err);
+      setError("Ocorreu um erro inesperado ao tentar entrar.");
     } finally {
       setIsLoading(false);
     }
