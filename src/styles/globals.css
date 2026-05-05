@@ -85,3 +85,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Hide Bottom Nav when Dialog is open */
+body.dialog-open #bottom-nav {
+  display: none !important;
+}

@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 
 export interface User {
   id: string;
+  name: string | null;
   full_name: string | null;
   email?: string | null;
   avatar_url: string | null;
@@ -14,25 +15,11 @@ export function useUsers() {
     queryFn: async (): Promise<User[]> => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, avatar_url')
-        .order('full_name');
+        .select('id, name, full_name, email, avatar_url')
+        .order('name');
 
       if (error) throw error;
-
-      // Buscar emails do auth.users
-      const userIds = data?.map((u) => u.id) || [];
-      const usersWithEmails = await Promise.all(
-        data?.map(async (profile) => {
-          // Para obter email, precisamos usar o Supabase Admin API ou user metadata
-          // Por enquanto, retornamos sem email
-          return {
-            ...profile,
-            email: null,
-          };
-        }) || []
-      );
-
-      return usersWithEmails;
+      return (data as unknown as User[]) || [];
     },
   });
 }

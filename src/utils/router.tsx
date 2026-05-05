@@ -61,7 +61,7 @@ export function RouterProvider({ children }: { children: ReactNode }) {
         if (needsOnboarding) {
           setCurrentPage("onboarding");
         } else {
-          setCurrentPage("index");
+          setCurrentPage("agenda");
         }
       } catch (error) {
         console.error("Failed to check user:", error);

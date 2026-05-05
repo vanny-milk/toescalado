@@ -1,10 +1,18 @@
 import * as React from "react"
 import { cn } from "../../utils/cn"
+import { useEffect } from "react"
 
 const Dialog = React.forwardRef<
     HTMLDivElement,
     React.HTMLAttributes<HTMLDivElement> & { open?: boolean; onOpenChange?: (open: boolean) => void }
 >(({ children, open, onOpenChange, ...props }, ref) => {
+    useEffect(() => {
+        if (open) {
+            document.body.classList.add("dialog-open")
+            return () => document.body.classList.remove("dialog-open")
+        }
+    }, [open])
+
     if (!open) return null;
     return (
         <div ref={ref} {...props} className="fixed inset-0 z-50 flex items-center justify-center">

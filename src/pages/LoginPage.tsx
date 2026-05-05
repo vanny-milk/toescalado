@@ -47,10 +47,10 @@ export function LoginPage() {
           if (needsOnboarding) {
             navigate("onboarding");
           } else {
-            navigate("index");
+            navigate("agenda");
           }
         } else {
-          navigate("index");
+          navigate("agenda");
         }
       }
     } catch (err) {

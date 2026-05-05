@@ -179,6 +179,39 @@ Deve mostrar:
 - `test-database.js` - Verifica banco
 - `test-supabase.js` - Testa conexão
 
+### 5. Tabelas de Agenda e Escala
+
+**Arquivo:** `supabase/migrations/20260505_create_agenda_tables.sql`
+
+**Novas Tabelas:**
+- ✅ `events`: Armazena os eventos principais (título, tipo, data/hora, local).
+- ✅ `event_guests`: Tabela de junção para convidados, com status e função.
+
+**Estrutura `events`:**
+```typescript
+events: {
+  id: string; (PK)
+  title: string;
+  description: string | null;
+  type: 'reuniao' | 'ensaio' | 'culto' | 'outro';
+  start_time: string; (ISO TIMESTAMP)
+  location: string | null;
+  created_by: string; (FK -> profiles.id)
+  created_at: string;
+}
+```
+
+**Estrutura `event_guests`:**
+```typescript
+event_guests: {
+  id: string; (PK)
+  event_id: string; (FK -> events.id)
+  user_id: string; (FK -> profiles.id)
+  status: 'confirmed' | 'pending' | 'unavailable';
+  role: string | null; (Função na escala)
+}
+```
+
 ---
 
 **✨ Tudo pronto!** A estrutura agora está alinhada com a realidade do Supabase e segue todas as políticas do projeto.
