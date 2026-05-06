@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { 
-  Bell, Check, Clock, Calendar, MessageSquare, ExternalLink, Loader2, 
+  Bell, Calendar, MessageSquare, ExternalLink, Loader2, 
   UserCheck, UserX, CheckCircle, Star, AlertTriangle 
 } from 'lucide-react';
 import { useNotifications } from '../hooks/useNotifications';
@@ -29,13 +29,7 @@ export function NotificationMenu() {
     
     // Lógica de redirecionamento baseada no tipo
     if (notification.type.includes('event') || notification.type.includes('guest') || notification.type.includes('pending')) {
-      const eventId = notification.payload?.event_id;
-      if (eventId) {
-        // Redireciona para agenda com o ID do evento para abrir o modal
-        navigate(`/agenda?event_id=${eventId}`);
-      } else {
-        navigate('/agenda');
-      }
+      navigate("agenda");
     }
     
     setIsOpen(false);

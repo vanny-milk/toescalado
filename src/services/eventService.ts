@@ -64,11 +64,11 @@ export const eventService = {
       .from('events')
       .insert({
         title: event.title,
-        description: event.description,
-        type: event.type,
+        description: event.description || null,
+        type: event.type || null,
         start_time: event.start,
         event_date: event.start.split('T')[0],
-        location: event.location,
+        location: event.location || null,
         created_by: createdBy,
       })
       .select('id')
@@ -84,7 +84,7 @@ export const eventService = {
       const guestsToInsert = event.participants.map(p => ({
         event_id: newEvent.id,
         user_id: p.id,
-        role: p.role,
+        role: p.role || null,
         status: 'pending',
       }));
 
@@ -112,11 +112,11 @@ export const eventService = {
       .from('events')
       .update({
         title: event.title,
-        description: event.description,
-        type: event.type,
+        description: event.description || null,
+        type: event.type || null,
         start_time: event.start,
         event_date: event.start.split('T')[0],
-        location: event.location,
+        location: event.location || null,
       })
       .eq('id', event.id);
 
@@ -146,7 +146,7 @@ export const eventService = {
       const guestsToUpsert = event.participants.map(p => ({
         event_id: event.id,
         user_id: p.id,
-        role: p.role,
+        role: p.role || null,
         status: p.status || 'pending',
       }));
 

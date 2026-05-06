@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "../utils/router";
-import { authService, supabase } from "../services/auth";
+import { authService } from "../services/auth";
 import { Button } from "../components/Button";
 import { InputWithIcon } from "../components/InputWithIcon";
 import { Label } from "../components/Label";

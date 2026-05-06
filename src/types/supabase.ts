@@ -135,6 +135,7 @@ export interface Database {
           role?: string | null;
           full_name?: string | null;
         };
+        Relationships: [];
       };
       events: {
         Row: {
@@ -172,6 +173,7 @@ export interface Database {
           created_by?: string | null;
           updated_at?: string;
         };
+        Relationships: [];
       };
       event_guests: {
         Row: {
@@ -197,10 +199,46 @@ export interface Database {
           status?: string | null;
           role?: string | null;
         };
+        Relationships: [];
+      };
+      notifications: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          message: string;
+          type: string;
+          payload: Json;
+          is_read: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title: string;
+          message: string;
+          type: string;
+          payload?: Json;
+          is_read?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          title?: string;
+          message?: string;
+          type?: string;
+          payload?: Json;
+          is_read?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
       };
     };
     Views: {};
     Functions: {};
+    Enums: {};
+    CompositeTypes: {};
   };
 }
 
